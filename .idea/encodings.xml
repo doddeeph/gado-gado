@@ -3,6 +3,8 @@
   <component name="Encoding">
     <file url="file://$PROJECT_DIR$/acid/java-acid/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/acid/java-acid/src/main/resources" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/acid/springboot-acid/src/main/java" charset="UTF-8" />
+    <file url="file://$PROJECT_DIR$/acid/springboot-acid/src/main/resources" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/acid/src/main/java" charset="UTF-8" />
     <file url="file://$PROJECT_DIR$/acid/src/main/resources" charset="UTF-8" />
   </component>
