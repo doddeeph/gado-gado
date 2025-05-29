@@ -2,9 +2,17 @@ package com.example.acid.service.dto;
 
 import jakarta.validation.constraints.NotBlank;
 import jakarta.validation.constraints.NotNull;
+import lombok.AllArgsConstructor;
+import lombok.Builder;
+import lombok.Data;
+import lombok.NoArgsConstructor;
 
 import java.math.BigDecimal;
 
+@Data
+@NoArgsConstructor
+@AllArgsConstructor
+@Builder
 public class TransferDto {
 
     @NotBlank
@@ -12,37 +20,4 @@ public class TransferDto {
 
     @NotNull
     private BigDecimal amount;
-
-    public TransferDto() {
-    }
-
-    public TransferDto(String from, String to, BigDecimal amount) {
-        this.from = from;
-        this.to = to;
-        this.amount = amount;
-    }
-
-    public String getFrom() {
-        return from;
-    }
-
-    public void setFrom(String from) {
-        this.from = from;
-    }
-
-    public String getTo() {
-        return to;
-    }
-
-    public void setTo(String to) {
-        this.to = to;
-    }
-
-    public BigDecimal getAmount() {
-        return amount;
-    }
-
-    public void setAmount(BigDecimal amount) {
-        this.amount = amount;
-    }
 }

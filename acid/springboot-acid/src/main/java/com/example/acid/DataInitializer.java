@@ -1,4 +1,4 @@
-package com.example.acid.service;
+package com.example.acid;
 
 import com.example.acid.entity.Account;
 import com.example.acid.repository.AccountRepository;
@@ -11,20 +11,20 @@ import java.util.Arrays;
 import java.util.List;
 
 @Component
-public class DataInitializerService implements CommandLineRunner {
+public class DataInitializer implements CommandLineRunner {
 
     private final AccountRepository accountRepository;
 
     @Autowired
-    public DataInitializerService(AccountRepository accountRepository) {
+    public DataInitializer(AccountRepository accountRepository) {
         this.accountRepository = accountRepository;
     }
 
     @Override
     public void run(String... args) throws Exception {
         List<Account> initAccounts = Arrays.asList(
-                new Account("Alice", BigDecimal.valueOf(500)),
-                new Account("Bob", BigDecimal.valueOf(300)));
+                Account.builder().name("Alice").balance(BigDecimal.valueOf(500)).build(),
+                Account.builder().name("Bob").balance(BigDecimal.valueOf(300)).build());
         accountRepository.saveAll(initAccounts);
         System.out.println("Accounts initialized.");
     }
