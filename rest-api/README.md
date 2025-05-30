@@ -1,35 +1,71 @@
 # REST API
 `REST`, which stands for `Representational State Transfer`, is an architectural style for designing networked applications. A REST `API` (`Application Programming Interface`) is a set of rules and conventions for building and interacting with web services that adhere to the principles of REST.
 
+## Designing a REST API
+Designing a REST API involves several key aspects such as defining resources, choosing HTTP methods, handling CRUD operations, error handling, versioning, authentication, and documentation. Here are some steps and considerations for designing a REST API:
+
+1. **Define Resources**:
+- Identify the resources your API will expose (e.g., users, products, orders).
+- Use nouns to represent resources (e.g., `/users`, `/products`).
+2. Choose HTTP Methods:
+Use HTTP methods to perform CRUD operations:
+   - `GET` for retrieving data.
+   - `POST` for creating new resources.
+   - `PUT` or `PATCH` for updating existing resources.
+   - `DELETE` for removing resources.
+3. Resource Endpoints:
+- Define clear and consistent endpoint URLs (e.g., `/users/{id}`, `/products/{id}`).
+- Use `plural nouns` for collections (e.g., `/users`, `/products`).
+4. Request and Response Formats:
+- Use JSON or XML for request and response payloads.
+- Follow a consistent data format for readability and ease of use.
+5. Error Handling:
+- Use appropriate HTTP status codes for different scenarios (e.g., 200 for successful requests, 404 for not found, 400 for bad requests, 500 for server errors).
+- Provide meaningful error messages in the response body.
+6. Authentication and Authorization:
+- Implement authentication mechanisms such as OAuth, JWT, or API keys.
+- Use authorization to control access to resources based on user roles or permissions.
+7. Versioning:
+- Consider versioning your API to manage changes and ensure backward compatibility (e.g., `/v1/users`, `/v2/users`).
+8. Documentation:
+- Create comprehensive API documentation using tools like Swagger, OpenAPI, or Postman.
+- Include endpoints, request/response formats, authentication methods, and usage examples.
+9. Testing:
+- Test your API endpoints thoroughly using tools like Postman or cURL.
+- Perform integration testing to validate interactions between components.
+10. Security:
+- Implement security best practices such as HTTPS for data encryption.
+- Validate and sanitize inputs to prevent security vulnerabilities like SQL injection or XSS attacks.
+
 ## CRUD
 A simple example of a RESTful API for managing a collection of books. In this example, we'll have endpoints for retrieving a list of books, getting information about a specific book, adding a new book, updating an existing book, and deleting a book.
 1. Retrieve a List of Books (GET):
 ```
-GET /api/books
+GET /api/v1/books
 ```
 This endpoint returns a list of all books in the collection.
 
 2. Retrieve Information about a Specific Book (GET):
 ```
-GET /api/books/{bookId}
+GET /api/v1/books/{bookId}
 ```
 This endpoint returns details about a specific book identified by `{bookId}`.
 
 3. Add a New Book (POST):
 ```
-POST /api/books
+POST /api/v1/books
 ```
 This endpoint allows you to add a new book to the collection. The book details would be sent in the request body, typically in JSON format.
 
 4. Update an Existing Book (PUT):
 ```
-PUT /api/books/{bookId}
+PUT /api/v1/books/{bookId}
 ```
 This endpoint allows you to update the details of a specific book identified by `{bookId}`. The updated book details would be sent in the request body.
 
 5. Delete a Book (DELETE):
 ```
-DELETE /api/books/{bookId}
+DELETE /api/v1/books/{bookId}
 ```
 This endpoint allows you to delete a specific book identified by `{bookId}`.
 
@@ -72,7 +108,7 @@ When dealing with pageable responses in a RESTful API, it's common to use query 
 
 Here's an example of how you might structure a pageable response using query parameters:
 ```
-GET /api/books?page=1&size=10&sort=title,asc
+GET /api/v1/books?page=1&size=10&sort=title,asc
 ```
 
 In this example, the client is requesting the second page (`page=1`), with 10 items per page (`size=10`), sorted by the `title` field in `ascending` order (`sort=title,asc`).
@@ -151,7 +187,7 @@ Existing Book (ID = 1)
 You want to update just the `genre` of the book with ID `1`.
 Request:
 ```
-PATCH /api/books/1
+PATCH /api/v1/books/1
 Content-Type: application/json
 ```
 Request Body:
@@ -178,7 +214,7 @@ Content-Type: application/json
 
 ### 🛠 In Java Spring Boot (Example Implementation):
 ```
-@PatchMapping("/api/books/{id}")
+@PatchMapping("/api/v1/books/{id}")
 public ResponseEntity<Book> updateBookPartial(
         @PathVariable Long id,
         @RequestBody Map<String, Object> updates) {
@@ -221,7 +257,7 @@ These codes mean the request was successfully received, understood, and processe
 Use Case: Client requests a list of books.
 Request:
 ```
-GET /api/books
+GET /api/v1/books
 ```
 Response:
 ```
@@ -239,7 +275,7 @@ Content-Type: application/json
 Use Case: Client successfully creates a new book.
 Request:
 ```
-POST /api/books
+POST /api/v1/books
 Content-Type: application/json
 ```
 ```
@@ -251,7 +287,7 @@ Content-Type: application/json
 Response:
 ```
 HTTP/1.1 201 Created
-Location: /api/books/3
+Location: /api/v1/books/3
 ```
 ```
 {
@@ -265,7 +301,7 @@ Location: /api/books/3
 Use Case: Client deletes a book.
 Request:
 ```
-DELETE /api/books/3
+DELETE /api/v1/books/3
 ```
 Response:
 ```
@@ -290,7 +326,7 @@ These codes indicate the client made an error (e.g., malformed request, unauthor
 Use Case: Missing required field in the request.
 Request:
 ```
-POST /api/books
+POST /api/v1/books
 Content-Type: application/json
 ```
 ```
@@ -312,7 +348,7 @@ HTTP/1.1 400 Bad Request
 Use Case: Client accesses a protected route without a token.
 Request:
 ```
-GET /api/users
+GET /api/v1/books
 ```
 Response:
 ```
@@ -328,7 +364,7 @@ HTTP/1.1 401 Unauthorized
 Use Case: User is authenticated but not an admin.
 Request:
 ```
-DELETE /api/users/1
+DELETE /api/v1/books/1
 ```
 Response:
 ```
@@ -344,7 +380,7 @@ HTTP/1.1 403 Forbidden
 Use Case: Client requests a book that doesn't exist.
 Request:
 ```
-GET /api/books/999
+GET /api/v1/books/999
 ```
 Response:
 ```
@@ -360,7 +396,7 @@ HTTP/1.1 404 Not Found
 Use Case: Trying to create a book with a title that already exists (unique constraint).
 Request:
 ```
-POST /api/books
+POST /api/v1/books
 ```
 ```
 {
@@ -452,7 +488,7 @@ Content-Type: application/json
 ```
 2. Access secured endpoint with token (Authorization)
 ```
-GET /api/books
+GET /api/v1/books
 Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
 ```
 ✅ Response:
@@ -461,7 +497,7 @@ Authorization: Bearer eyJhbGciOiJIUzI1NiIs...
 ```
 3. Try DELETE with USER role (Authorization fails)
 ```
-DELETE /api/books/1
+DELETE /api/v1/books/1
 Authorization: Bearer <user-token>
 ```
 ❌ Response:
