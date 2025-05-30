@@ -3,6 +3,7 @@
   <component name="ProjectModuleManager">
     <modules>
       <module fileurl="file://$PROJECT_DIR$/.idea/gado-gado.iml" filepath="$PROJECT_DIR$/.idea/gado-gado.iml" />
+      <module fileurl="file://$PROJECT_DIR$/database/acid/java-acid/java-acid.iml" filepath="$PROJECT_DIR$/database/acid/java-acid/java-acid.iml" />
     </modules>
   </component>
 </project>

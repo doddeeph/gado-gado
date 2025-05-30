@@ -8,6 +8,7 @@
         <option value="$PROJECT_DIR$/acid/java-acid/pom.xml" />
         <option value="$PROJECT_DIR$/acid/springboot-acid/pom.xml" />
         <option value="$PROJECT_DIR$/solid-principles/java-solid/pom.xml" />
+        <option value="$PROJECT_DIR$/database/acid/springboot-acid/pom.xml" />
       </list>
     </option>
   </component>
