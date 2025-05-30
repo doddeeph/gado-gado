@@ -9,6 +9,7 @@
         <outputRelativeToContentRoot value="true" />
         <module name="java-solid" />
         <module name="java-acid" />
+        <module name="springboot-acid" />
       </profile>
     </annotationProcessing>
     <bytecodeTargetLevel>
