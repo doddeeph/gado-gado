@@ -8,21 +8,25 @@ A simple example of a RESTful API for managing a collection of books. In this ex
 GET /api/books
 ```
 This endpoint returns a list of all books in the collection.
+
 2. Retrieve Information about a Specific Book (GET):
 ```
 GET /api/books/{bookId}
 ```
 This endpoint returns details about a specific book identified by `{bookId}`.
+
 3. Add a New Book (POST):
 ```
 POST /api/books
 ```
 This endpoint allows you to add a new book to the collection. The book details would be sent in the request body, typically in JSON format.
+
 4. Update an Existing Book (PUT):
 ```
 PUT /api/books/{bookId}
 ```
 This endpoint allows you to update the details of a specific book identified by `{bookId}`. The updated book details would be sent in the request body.
+
 5. Delete a Book (DELETE):
 ```
 DELETE /api/books/{bookId}
@@ -60,7 +64,7 @@ And a response for retrieving information about a specific book:
 }
 ```
 
-## Pageable responses in a RESTful API
+## Pageable Responses in a RESTful API
 When dealing with pageable responses in a RESTful API, it's common to use query parameters to allow clients to request a specific page of data. The typical query parameters for pageable responses include:
 - `page`: The page number to retrieve (starting from 0 or 1).
 - `size`: The number of items per page.
@@ -200,7 +204,7 @@ public ResponseEntity<Book> updateBookPartial(
 - Be cautious with partial updates — validate input to avoid corrupting the resource.
 - `PATCH` is ideal for performance when you're only changing a small part of a resource.
 
-## HTTP response status codes
+## HTTP Response Status Codes
 HTTP response status codes are three-digit numbers returned by the server to indicate the outcome of a request. They are grouped into categories based on their first digit:
 
 ### ✅ 2xx: Success
@@ -461,8 +465,8 @@ DELETE /api/books/1
 Authorization: Bearer <user-token>
 ```
 ❌ Response:
-````
+```
 {
-"error": "Access Denied"
+    "error": "Access Denied"
 }
 ```
