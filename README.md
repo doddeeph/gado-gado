@@ -34,8 +34,9 @@
 ## [CSV Product Import System](system-design/csv-product-import/README.md)
 
 # Lead Software Engineer
-## [Level up from Senior Backend Engineer to Lead Software Backend Engineer](lead-software-engineer/README.md)
-## [The Manager's Path - Tech Lead](the-managers-path/tech-lead/README.md)
+## [Level up from Senior Backend Engineer to Lead Software Backend Engineer](leadership/lead-software-engineer/README.md)
+## [The Manager's Path - Tech Lead](leadership/the-managers-path/tech-lead/README.md)
+## [Tech Lead Q&A](leadership/tech-lead/README.md)
 
 # Software Development Methodology
 ## [Agile](development/methodology/agile/README.md)
