@@ -1,0 +1,116 @@
+@startuml
+
+actor User
+participant "CDN" as CDN
+participant "Origin Server" as Origin
+participant "Web Server (HTTP/2)" as HTTP2
+participant "Web Server" as WebServer
+participant "Load Balancer" as LB
+participant "Server A" as ServerA
+participant "Server B" as ServerB
+participant "High-performance Server" as HighPerf
+participant "Application Server" as AppServer
+participant "Connection Pool" as Pool
+participant "Database (Indexed)" as DB
+participant "Cache (Redis)" as Cache
+participant "Message Queue" as MQ
+participant "Worker Service" as Worker
+participant "External API" as API
+
+== Rule 1: Use CDN ==
+User -> CDN : Request static content
+alt Content Cached in CDN
+    CDN --> User : Return cached content
+else Cache Miss
+    CDN -> Origin : Fetch content
+    Origin --> CDN : Return content
+    CDN --> User : Return cached content
+end
+
+== Rule 2: Use HTTP/2 with Load Balancer ==
+User -> HTTP2 : Stream 1: Request A
+User -> HTTP2 : Stream 2: Request B
+HTTP2 -> LB : Forward multiplexed requests
+alt Stream 1 -> Server A
+    LB -> ServerA : Process Request A
+    ServerA --> LB : Response A
+end
+alt Stream 2 -> Server B
+    LB -> ServerB : Process Request B
+    ServerB --> LB : Response B
+end
+LB --> HTTP2 : Combined Response A + B
+HTTP2 --> User : Stream 1: Response A
+HTTP2 --> User : Stream 2: Response B
+
+== Rule 3: Group Requests ==
+User -> WebServer : Batched Request [item1, item2, item3]
+WebServer --> User : Batched Response [res1, res2, res3]
+
+== Rule 4: Load Balancer ==
+User -> LB : Send request
+alt Server A selected
+    LB -> ServerA : Forward request
+    ServerA --> LB : Response
+else Server B selected
+    LB -> ServerB : Forward request
+    ServerB --> LB : Response
+end
+LB --> User : Return response
+
+== Rule 5: Scale Vertically ==
+User -> HighPerf : Request data
+note right of HighPerf
+  More RAM/CPU/SSD improves speed
+end note
+HighPerf --> User : Response
+
+== Rule 6: Connection Pooling ==
+AppServer -> Pool : Get connection
+Pool -> DB : Execute query
+DB --> Pool : Query result
+Pool --> AppServer : Return result
+
+== Rule 7: Database Index ==
+AppServer -> DB : SELECT * FROM table WHERE indexed_column = value
+note right of DB
+  Index speeds up lookup
+end note
+DB --> AppServer : Return result
+
+== Rule 8: Use Cache ==
+AppServer -> Cache : GET key
+alt Cache hit
+    Cache --> AppServer : Cached value
+else Cache miss
+    Cache --> AppServer : null
+    AppServer -> DB : Query for key
+    DB --> AppServer : Value
+    AppServer -> Cache : SET key = value
+end
+
+== Rule 9: Message Queue ==
+User -> MQ : Enqueue task (e.g., sendEmail)
+MQ -> Worker : Deliver task
+Worker -> Worker : Process task
+Worker --> MQ : Ack
+
+== Rule 10: Reduce External Dependencies ==
+alt Required
+    AppServer -> API : API call
+    API --> AppServer : Response
+else Avoided
+    AppServer -> AppServer : Skip external call
+end
+
+== Rule 11: Efficient Serialization (Protobuf) ==
+User -> AppServer : Request
+AppServer -> AppServer : Serialize with Protobuf
+AppServer --> User : Send Protobuf data
+
+== Rule 12: Compress Payload ==
+User -> AppServer : Request data
+AppServer -> AppServer : Compress payload (e.g., GZIP)
+AppServer --> User : Compressed data
+
+@enduml
