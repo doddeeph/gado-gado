@@ -1,0 +1,18 @@
+@startuml
+
+title Indexing – Email Lookup Optimization
+
+actor "Client"
+database "Users DB" as UsersDB
+entity "users table" as Users
+frame "B-Tree Index on email" as EmailIndex
+
+Client --> Users : SELECT * FROM users WHERE email = ?
+Users --> EmailIndex : Fast lookup via index
+
+note right of EmailIndex
+Reduces full table scan\n
+Improves login speed dramatically
+end note
+
+@enduml

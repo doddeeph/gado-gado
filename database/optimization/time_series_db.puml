@@ -1,0 +1,20 @@
+@startuml
+
+title Time-Series DB Optimization (InfluxDB)
+
+actor IoTDevice
+queue "Telegraf / Kafka / MQTT" as Ingest
+component "InfluxDB" as Influx
+component "Grafana / Query Engine" as Dashboard
+
+IoTDevice --> Ingest : Send sensor data
+Ingest --> Influx : Write points
+Dashboard --> Influx : Query metrics
+
+note bottom of Influx
+  Optimized for time-series data
+  High ingestion rate
+  TTL, downsampling, retention policies
+end note
+
+@enduml

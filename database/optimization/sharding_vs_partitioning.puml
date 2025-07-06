@@ -1,0 +1,36 @@
+@startuml
+
+title Sharding vs Partitioning
+
+' Sharding (Application-Level Split)
+node "Application Router" as Router {
+  database "Shard 1" as Shard1
+  database "Shard 2" as Shard2
+  database "Shard 3" as Shard3
+}
+
+Router --> Shard1 : User ID 1–1000
+Router --> Shard2 : User ID 1001–2000
+Router --> Shard3 : User ID 2001+
+
+note right of Router
+  SHARDING: App logic handles routing
+  Scales horizontally across databases
+end note
+
+' Partitioning (Database-Level Split)
+node "Partitioned Orders Table" {
+  database "Orders Table" as OrdersMain
+  frame "Partition Jan" as PartJan
+  frame "Partition Feb" as PartFeb
+}
+
+OrdersMain --> PartJan
+OrdersMain --> PartFeb
+
+note right of OrdersMain
+  PARTITIONING: DB engine handles split
+  One logical table with internal partitions
+end note
+
+@enduml

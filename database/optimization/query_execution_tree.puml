@@ -1,0 +1,26 @@
+@startuml
+
+skinparam defaultFontSize 12
+title Query Execution Tree – SELECT with JOIN + WHERE + ORDER BY
+
+' Root
+component "Sort\n(created_at DESC)" as Sort
+component "Nested Loop Join" as Join
+component "Index Scan\non orders (status = 'paid')" as OrdersScan
+component "Index Scan\non customers (id = o.customer_id)" as CustomersScan
+
+Sort --> Join
+Join --> OrdersScan
+Join --> CustomersScan
+
+note right of OrdersScan
+Using index on orders.status
+Only rows with status = 'paid'
+end note
+
+note right of CustomersScan
+Primary key lookup
+Using customer.id = order.customer_id
+end note
+
+@enduml

@@ -1,0 +1,17 @@
+@startuml
+
+title Materialized View – Precompute Analytics
+
+database "Analytics DB" as AnalyticsDB
+entity "JOIN: orders + products" as ExpensiveQuery
+storage "Materialized View: daily_revenue" as MView
+
+AnalyticsDB --> ExpensiveQuery
+ExpensiveQuery --> MView : REFRESH MATERIALIZED VIEW
+
+note right of MView
+Cached snapshot of complex aggregation\n
+Faster dashboard loading
+end note
+
+@enduml

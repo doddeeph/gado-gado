@@ -1,0 +1,62 @@
+@startuml
+' Set diagram type explicitly
+skinparam componentStyle rectangle
+title Sharded E-Commerce Architecture (Component View)
+
+actor User
+
+component "API Gateway" as APIGW
+component "Auth Service" as Auth
+component "Product Service" as Product
+component "Cart Service" as Cart
+component "Order Service" as Order
+component "Inventory Service" as Inventory
+component "Recommendation Service" as Reco
+
+component "App Server Cluster" as App
+component "Shard Router" as Router
+component "Redis (Cache + Lock)" as Redis
+component "Kafka (Event Queue)" as Kafka
+
+component "UserDB Shard 1" as UserDB1
+component "UserDB Shard 2" as UserDB2
+component "OrderDB Shard 1" as OrderDB1
+component "OrderDB Shard 2" as OrderDB2
+component "Inventory DB" as InvDB
+component "Product DB" as ProdDB
+component "Analytics DB" as Analytics
+
+User --> APIGW
+APIGW --> Auth
+APIGW --> Product
+APIGW --> Cart
+APIGW --> Order
+
+Auth --> App
+Product --> App
+Cart --> App
+Order --> App
+Inventory --> App
+Reco --> App
+
+App --> Redis : cache / lock
+App --> Kafka : events
+App --> Router : resolve shard
+
+Router --> UserDB1
+Router --> UserDB2
+Router --> OrderDB1
+Router --> OrderDB2
+
+App --> InvDB
+App --> ProdDB
+App --> Reco
+
+UserDB1 --> Analytics
+UserDB2 --> Analytics
+OrderDB1 --> Analytics
+OrderDB2 --> Analytics
+InvDB --> Analytics
+ProdDB --> Analytics
+
+@enduml

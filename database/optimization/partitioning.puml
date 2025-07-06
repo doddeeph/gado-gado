@@ -1,0 +1,22 @@
+@startuml
+
+title Partitioning Strategy – Orders Table
+
+database "Main DB" as OrdersDB
+entity "orders (partitioned)" as OrdersTable
+
+folder "orders_2024_01" as P1
+folder "orders_2024_02" as P2
+folder "orders_2024_03" as P3
+
+OrdersDB --> OrdersTable
+OrdersTable --> P1 : Jan Data
+OrdersTable --> P2 : Feb Data
+OrdersTable --> P3 : Mar Data
+
+note bottom of OrdersTable
+Partitioned by RANGE (created_at)
+Faster queries per month
+end note
+
+@enduml

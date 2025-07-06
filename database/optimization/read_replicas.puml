@@ -1,0 +1,18 @@
+@startuml
+
+title Read Replicas – Read/Write Split Architecture
+
+actor App
+database "Primary DB" as Primary
+database "Replica 1" as Replica1
+database "Replica 2" as Replica2
+
+App --> Primary : Writes (INSERT, UPDATE)
+App --> Replica1 : Read Queries (SELECT)
+App --> Replica2 : Read Queries (SELECT)
+
+note bottom of Replica1
+Async replication from Primary
+end note
+
+@enduml

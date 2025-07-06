@@ -1,0 +1,38 @@
+@startuml
+
+skinparam componentStyle rectangle
+skinparam defaultFontSize 12
+title SQL Query Execution Plan (EXPLAIN Visualization)
+
+actor "Developer / DB Tool" as Dev
+component "Query Planner" as Planner
+component "Optimizer" as Optimizer
+component "Execution Engine" as Executor
+component "Indexes / Stats" as Indexes
+component "Table Scan" as TableScan
+component "Join Operation" as Join
+component "Sort / Aggregate" as Sort
+
+Dev --> Planner : EXPLAIN SELECT *
+Planner --> Optimizer : Build logical plan
+Optimizer --> Indexes : Check indexes/stats
+Optimizer --> Executor : Return best plan
+Executor --> TableScan : Scan table(s)
+Executor --> Join : Join tables (e.g., Nested Loop)
+Executor --> Sort : ORDER BY / GROUP BY
+Sort --> Dev : Final plan w/ cost
+
+note right of Planner
+Parses SQL into logical plan tree
+end note
+
+note right of Optimizer
+Evaluates join strategies,
+index usage, and filter pushdown
+end note
+
+note right of Executor
+Runs physical plan and tracks cost
+end note
+
+@enduml

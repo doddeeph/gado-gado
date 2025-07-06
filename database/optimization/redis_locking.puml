@@ -1,0 +1,24 @@
+@startuml
+
+title Redis Distributed Lock – Booking Flow
+
+actor "User A" as UA
+actor "User B" as UB
+component "Application Service" as App
+database "Booking DB" as DB
+queue "Redis (SETNX)" as Redis
+
+UA --> App : Request to book room 123
+UB --> App : Request to book room 123
+
+App --> Redis : SETNX lock:room:123
+Redis --> App : Lock acquired?
+App --> DB : Proceed to book if lock OK
+App --> Redis : DEL lock:room:123
+
+note bottom of Redis
+SETNX for lock, DEL after booking\n
+Only one user gets the lock
+end note
+
+@enduml

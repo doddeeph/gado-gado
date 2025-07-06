@@ -1,0 +1,24 @@
+@startuml
+
+title Query Caching – Cache-Aside Pattern
+
+actor User
+participant "App Server" as App
+participant "Redis / Memcached" as Cache
+database "Database" as DB
+
+User -> App : Request data (e.g., /users/123)
+App -> Cache : GET user:123
+Cache --> App : Miss (null)
+App -> DB : SELECT * FROM users WHERE id = 123
+DB --> App : User Data
+App -> Cache : SET user:123 with TTL
+App --> User : Return User Data
+
+== Next Request ==
+User -> App : Request data (again)
+App -> Cache : GET user:123
+Cache --> App : Hit (User Data)
+App --> User : Return Cached Data
+
+@enduml
