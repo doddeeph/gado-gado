@@ -1,0 +1,22 @@
+@startuml
+
+title Kafka Fan-Out with Separate Consumer Groups
+
+actor Producer as "Producer\n(E-commerce App)"
+
+rectangle "Kafka Topic: order-events\n(3 partitions)" as Kafka
+
+Producer --> Kafka : Order-1\nOrder-2\nOrder-3
+
+rectangle "Consumer-A (Inventory)\nGroup: inventory-group" as Inventory
+rectangle "Consumer-B (Payment)\nGroup: payment-group" as Payment
+
+Kafka --> Inventory : Order-1\nOrder-2\nOrder-3
+Kafka --> Payment : Order-1\nOrder-2\nOrder-3
+
+note right of Kafka
+Each consumer group gets its own copy of data.\n
+Inventory and Payment process all events independently.
+end note
+
+@enduml

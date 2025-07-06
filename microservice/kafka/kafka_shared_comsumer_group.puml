@@ -1,0 +1,31 @@
+@startuml
+title Kafka with 3 Partitions and Shared Consumer Group
+
+actor Producer as "Producer\n(E-commerce App)"
+
+rectangle "Kafka Topic: order-events\n(3 partitions)" {
+  queue P0
+  queue P1
+  queue P2
+}
+
+Producer --> P0 : Order-1\nOrder-4
+Producer --> P1 : Order-2\nOrder-5
+Producer --> P2 : Order-3\nOrder-6
+
+rectangle "Consumer-A\nGroup: order-processor-group" as A
+rectangle "Consumer-B\nGroup: order-processor-group" as B
+
+P0 --> A
+P1 --> A
+P2 --> B
+
+note right of B
+⚠️ Consumer-B handles only P2\n(Order-3, Order-6)\n
+If payment logic is only here,\nsome orders are missed
+end note
+
+note bottom of P0
+Each partition is processed\nby only one consumer\nin the group
+end note
+@enduml

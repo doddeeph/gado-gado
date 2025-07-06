@@ -1,0 +1,29 @@
+@startuml
+
+title Kafka Event Chaining: Inventory triggers Payment
+
+actor Producer as "Producer\n(E-commerce App)"
+
+rectangle "Kafka Topic: order-events" as OrderTopic
+rectangle "Kafka Topic: payment-requests" as PaymentTopic
+
+rectangle "Consumer-A (Inventory Service)\nGroup: inventory-group" as Inventory
+rectangle "Consumer-B (Payment Service)\nGroup: payment-group" as Payment
+
+Producer --> OrderTopic : produce(Order-1)
+
+OrderTopic --> Inventory : consume(Order-1)
+
+Inventory --> PaymentTopic : publish(PaymentRequest for Order-1)
+
+PaymentTopic --> Payment : consume(PaymentRequest for Order-1)
+
+note right of Inventory
+Inventory processes the order\nand emits payment-request event
+end note
+
+note right of Payment
+Payment only processes messages\nfrom payment-requests topic
+end note
+
+@enduml
