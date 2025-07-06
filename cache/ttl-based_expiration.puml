@@ -1,0 +1,22 @@
+@startuml
+title TTL-Based Cache Expiration
+
+actor User
+participant "Application Service" as App
+participant "Cache (with TTL)" as Cache
+participant "Database" as DB
+
+User -> App : Request data (key)
+App -> Cache : Get(key)
+alt Cache HIT and TTL not expired
+    Cache --> App : Return value
+    App --> User : Return data
+else Cache MISS or expired
+    Cache --> App : MISS
+    App -> DB : Query data (key)
+    DB --> App : Return value
+    App -> Cache : Set(key, value, TTL)
+    App --> User : Return data
+end
+
+@enduml

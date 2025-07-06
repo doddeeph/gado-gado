@@ -1,0 +1,17 @@
+@startuml
+title Cache-Aside Strategy (Lazy Loading)
+
+actor User
+participant "Application Service" as App
+participant "Cache (e.g., Redis)" as Cache
+participant "Database" as DB
+
+User -> App : Request data (key)
+App -> Cache : Get(key)
+Cache --> App : Cache MISS
+App -> DB : Query data (key)
+DB --> App : Return data
+App -> Cache : Set(key, value, TTL)
+App --> User : Return data
+
+@enduml

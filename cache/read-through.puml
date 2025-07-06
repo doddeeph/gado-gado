@@ -1,0 +1,18 @@
+@startuml
+title Read-Through Caching Strategy
+
+actor User
+participant "Application Service" as App
+participant "Cache with Loader" as Cache
+
+User -> App : Request data (key)
+App -> Cache : Get(key)
+alt Cache HIT
+    Cache --> App : Return value
+else Cache MISS
+    Cache -> Cache : Load from DB internally
+    Cache --> App : Return value
+end
+App --> User : Return data
+
+@enduml

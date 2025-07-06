@@ -1,0 +1,14 @@
+@startuml
+title Write-Through Caching Strategy
+
+actor User
+participant "Application Service" as App
+participant "Cache (e.g., Redis)" as Cache
+participant "Database" as DB
+
+User -> App : Write data (key, value)
+App -> Cache : Set(key, value)
+App -> DB : Persist(key, value)
+App --> User : Write successful
+
+@enduml

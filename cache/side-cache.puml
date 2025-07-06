@@ -1,0 +1,29 @@
+@startuml
+title Side Cache (App-Controlled)
+
+actor Client
+participant "Application Service" as App
+participant "Redis / In-Memory Cache" as Cache
+participant "Database" as DB
+
+== Read Flow ==
+Client -> App : GET /user/42
+App -> Cache : GET key:user:42
+alt Cache HIT
+    Cache --> App : Return cached user
+    App --> Client : 200 OK
+else Cache MISS
+    Cache --> App : MISS
+    App -> DB : SELECT * FROM user WHERE id=42
+    DB --> App : User data
+    App -> Cache : SET key:user:42, TTL=30min
+    App --> Client : 200 OK
+end
+
+== Write/Update Flow ==
+Client -> App : PUT /user/42
+App -> DB : UPDATE user SET ...
+DB --> App : OK
+App -> Cache : DEL key:user:42
+
+@enduml

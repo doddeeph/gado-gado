@@ -1,0 +1,17 @@
+@startuml
+title Write-Back (Write-Behind) Caching Strategy
+
+actor User
+participant "Application Service" as App
+participant "Cache with Write Queue" as Cache
+participant "Database (Async Write)" as DB
+
+User -> App : Write data (key, value)
+App -> Cache : Set(key, value)
+note right of Cache : Queue the write\nfor async flush
+App --> User : Write acknowledged
+
+== Later (async) ==
+Cache -> DB : Flush write (key, value)
+
+@enduml

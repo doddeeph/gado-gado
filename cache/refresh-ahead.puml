@@ -1,0 +1,34 @@
+@startuml
+title Refresh-Ahead Caching
+
+actor Client
+participant "App Service" as App
+participant "Cache (with TTL + Refresh)" as Cache
+participant "Database" as DB
+participant "Scheduler / Background Job" as Refresher
+
+== Client Reads Cached Data ==
+Client -> App : GET /resource/123
+App -> Cache : GET key:resource:123
+alt Cache HIT
+    Cache --> App : Return cached value
+    App --> Client : 200 OK
+else Cache MISS
+    Cache --> App : MISS
+    App -> DB : SELECT * FROM resource WHERE id=123
+    DB --> App : DB result
+    App -> Cache : SET key:resource:123 TTL=5min
+    App --> Client : 200 OK
+end
+
+== Background Refresh Happens Before Expiry ==
+Refresher -> Cache : Check TTL for key:resource:123
+alt TTL < threshold (e.g., <30s)
+    Refresher -> DB : SELECT * FROM resource WHERE id=123
+    DB --> Refresher : Result
+    Refresher -> Cache : Refresh key:resource:123 TTL=5min
+else TTL still long
+    Refresher --> Cache : Skip refresh
+end
+
+@enduml
