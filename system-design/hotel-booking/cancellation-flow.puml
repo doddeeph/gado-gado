@@ -1,0 +1,30 @@
+@startuml CancellationFlow
+actor User
+participant WebApp
+participant API_Gateway
+participant BookingService
+participant RoomService
+participant Redis
+participant DB
+participant NotificationService
+
+User -> WebApp : Cancel Booking (bookingId)
+WebApp -> API_Gateway : DELETE /booking/{id}
+API_Gateway -> BookingService : cancelBooking(bookingId)
+
+BookingService -> DB : SELECT * FROM bookings WHERE id = ?
+alt Status = BOOKED and future date
+    BookingService -> DB : UPDATE booking status to CANCELLED
+
+    BookingService -> RoomService : releaseRoom(roomId, date)
+    RoomService -> DB : UPDATE available_count + 1
+    RoomService -> Redis : Invalidate cache availability:room:123:2025-12-20
+
+    BookingService -> NotificationService : sendCancellation()
+
+    BookingService -> API_Gateway : 200 OK
+    API_Gateway -> WebApp : Booking Cancelled
+else Not eligible
+    BookingService -> API_Gateway : 403 Forbidden
+end
+@enduml

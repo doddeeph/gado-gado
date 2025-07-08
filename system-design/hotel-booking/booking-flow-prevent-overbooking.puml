@@ -1,0 +1,55 @@
+@startuml BookingFlow
+actor User
+participant WebApp
+participant "API Gateway" as APIGateway
+participant BookingService
+participant RoomService
+participant Redis
+participant "Database" as DB
+participant PaymentService
+participant "Payment Gateway" as PaymentGateway
+participant NotificationService
+
+== Step 1: Booking Request ==
+User -> WebApp : Book Room (roomId, date)
+WebApp -> APIGateway : POST /book
+APIGateway -> BookingService : book(roomId, date, userId)
+
+== Step 2: Room Locking ==
+BookingService -> RoomService : checkAndLock(roomId, date)
+RoomService -> Redis : SETNX lock:room:123:2025-12-20
+
+alt Lock Acquired
+    RoomService -> Redis : GET availability:room:123:2025-12-20
+    alt Cache Miss
+        RoomService -> DB : SELECT available_count
+        RoomService -> Redis : SET availability (with TTL)
+    end
+    RoomService -> DB : UPDATE available_count - 1
+    RoomService -> BookingService : OK
+else Lock Failed
+    RoomService -> BookingService : "Room Temporarily Unavailable"
+end
+
+== Step 3: Payment ==
+alt Lock Acquired
+    BookingService -> PaymentService : charge(user, price)
+    PaymentService -> PaymentGateway : process()
+    PaymentGateway --> PaymentService : success
+    PaymentService --> BookingService : success
+
+    BookingService -> DB : INSERT INTO bookings(...)
+    BookingService -> NotificationService : sendConfirmation()
+
+    RoomService -> Redis : DEL lock:room:123:2025-12-20
+    BookingService -> APIGateway : 200 OK
+    APIGateway -> WebApp : Booking Confirmed
+else Payment Failed
+    BookingService -> DB : revert booking (optional)
+    RoomService -> DB : ROLLBACK available_count + 1
+    RoomService -> Redis : DEL lock:room:123:2025-12-20
+    BookingService -> APIGateway : 402 Payment Required
+    APIGateway -> WebApp : Payment Failed
+end
+
+@enduml

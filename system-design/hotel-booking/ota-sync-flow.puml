@@ -1,0 +1,10 @@
+@startuml
+actor "OTA Platform" as OTA
+participant OTASyncService
+participant DB
+participant Redis
+
+OTA -> OTASyncService: push/pull inventory
+OTASyncService -> DB: updateAvailability()
+OTASyncService -> Redis: invalidateCache()
+@enduml

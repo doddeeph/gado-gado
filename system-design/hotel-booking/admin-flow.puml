@@ -1,0 +1,10 @@
+@startuml
+actor Hotelier
+participant AdminPanel
+participant InventoryService
+participant DB
+
+Hotelier -> AdminPanel: Manage Room Inventory
+AdminPanel -> InventoryService: updateRoomInventory()
+InventoryService -> DB: persist changes
+@enduml

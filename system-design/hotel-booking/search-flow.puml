@@ -1,0 +1,19 @@
+@startuml
+actor User
+participant WebApp
+participant "API Gateway" as APIGateway
+participant SearchService
+participant HotelService
+participant RoomService
+participant Cache
+participant DB
+
+User -> WebApp: Search Hotels
+WebApp -> APIGateway: /search?location=...
+APIGateway -> SearchService: searchHotels()
+SearchService -> HotelService: getHotels()
+SearchService -> RoomService: getAvailability()
+RoomService -> Cache: checkAvailability()
+RoomService -> DB: fallback to DB (if cache miss)
+SearchService -> WebApp: return hotel list
+@enduml

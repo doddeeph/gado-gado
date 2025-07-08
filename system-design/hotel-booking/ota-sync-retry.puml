@@ -1,0 +1,64 @@
+@startuml OTASyncRetry
+
+actor "OTA Platform" as OTA
+participant "OTA Sync Scheduler" as OTASyncScheduler
+participant "OTA Sync Service" as OTASyncService
+participant "OTA Adapter" as OTAAdapter
+participant "Retry Queue (e.g., Kafka DLQ)" as RetryQueue
+participant Logger
+participant DB
+participant Redis
+participant "Alert System" as AlertSystem
+
+== Initial Sync Attempt ==
+
+OTASyncScheduler -> OTASyncService : triggerSync()
+OTASyncService -> OTAAdapter : pullInventory()
+OTAAdapter -> OTA : GET /inventory API
+
+alt Success
+    OTA --> OTAAdapter : 200 OK + data
+    OTAAdapter --> OTASyncService : inventory data
+    OTASyncService -> DB : update room_inventory
+    OTASyncService -> Redis : invalidate cache
+else Temporary Failure (e.g. 503)
+    OTA --> OTAAdapter : 503 Service Unavailable
+    OTAAdapter --> OTASyncService : error
+    OTASyncService -> RetryQueue : enqueue(roomId, retryCount = 1)
+    OTASyncService -> Logger : log warning
+else Rate Limited (429)
+    OTA --> OTAAdapter : 429 Too Many Requests
+    OTAAdapter --> OTASyncService : error with Retry-After
+    OTASyncService -> RetryQueue : enqueue with delay
+    OTASyncService -> Logger : log warning
+else Permanent Failure (e.g. 404)
+    OTA --> OTAAdapter : 404 Not Found
+    OTAAdapter --> OTASyncService : error
+    OTASyncService -> Logger : log error
+    OTASyncService -> AlertSystem : notify DevOps
+end
+
+== Retry Logic ==
+
+RetryQueue -> OTASyncService : retry(roomId, retryCount)
+OTASyncService -> OTAAdapter : pullInventory()
+OTAAdapter -> OTA : GET /inventory API
+
+alt Retry Success
+    OTA --> OTAAdapter : 200 OK + data
+    OTAAdapter --> OTASyncService : inventory data
+    OTASyncService -> DB : update room_inventory
+    OTASyncService -> Redis : invalidate cache
+else Retry Fails
+    OTA --> OTAAdapter : 503 or other error
+    OTAAdapter --> OTASyncService : error
+    alt Max retries reached
+        OTASyncService -> Logger : log critical failure
+        OTASyncService -> AlertSystem : notify support/devops
+    else Can retry again
+        OTASyncService -> RetryQueue : re-enqueue with retryCount++
+        OTASyncService -> Logger : log retry attempt
+    end
+end
+
+@enduml
